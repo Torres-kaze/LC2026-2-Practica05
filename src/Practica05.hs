@@ -4,15 +4,21 @@ import Terminos
 
 --Aplicar una sustitucion a un termino
 apsubT :: Term -> Subst -> Term
-apsubT = undefined 
+apsubT (Var nombre) s = buscar nombre s (Var nombre)
+apsubT (Fun f args) s = Fun f (aplicarLista args s)
+
 
 --Funcion auxiliar para aplicar la sustitucion a una lista de terminos
 aplicarLista :: [Term] -> Subst -> [Term]
-aplicarLista = undefined 
+aplicarLista [] _ = []
+aplicarLista (t : resto) s = apsubT t s : aplicarLista resto s
 
 --Funcion que elimina los pares que son de la forma x=x
 simpSus :: Subst -> Subst
-simpSus = undefined
+simpSus [] = []
+simpSus ((nombre, t) : resto)
+    | t == Var nombre = simpSus resto
+    | otherwise       = (nombre, t) : simpSus resto
 
 --Funcion que calcula la composicion de dos sustituciones
 compSus :: Subst -> Subst -> Subst
@@ -31,3 +37,10 @@ unificaListas = undefined
 unificaConj :: [Term] -> [Subst]
 unificaConj = undefined
 
+
+-- Funciones auxiliares
+buscar :: Nombre -> Subst -> Term -> Term
+buscar _ [] porDefecto = porDefecto
+buscar nombre ((x, t) : resto) porDefecto
+    | nombre == x = t
+    | otherwise   = buscar nombre resto porDefecto
